@@ -1,12 +1,13 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import UsersPage from './pages/UsersPage';
+import CreateUserPage from './pages/CreateUserPage';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<UsersPage />} />
-        {/* Aquí puedes agregar más rutas si lo necesitas */}
+        <Route path="/create-user" element={<CreateUserPage />} />
       </Routes>
     </BrowserRouter>
   );

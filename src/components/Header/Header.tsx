@@ -6,16 +6,13 @@ const Header: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 {/* Logo / Title */}
                 <div className="text-xl font-bold text-red-900 dark:text-white">
-                    MiAplicación
+                    Módulo de consulta y registro de usuarios en el sistema
                 </div>
 
                 {/* Navigation */}
                 <nav className="space-x-4 hidden md:flex">
                     <a href="#" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
                         Inicio
-                    </a>
-                    <a href="#" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
-                        Funcionalidades
                     </a>
                     <a href="#" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
                         Contacto
@@ -25,7 +22,7 @@ const Header: React.FC = () => {
                 {/* Botón (puede ser login/logout o modo oscuro) */}
                 <div>
                     <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                        Ingresar
+                        Salir
                     </button>
                 </div>
             </div>
