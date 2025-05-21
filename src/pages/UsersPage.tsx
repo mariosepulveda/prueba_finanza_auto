@@ -112,11 +112,9 @@ const UsersPage: React.FC = () => {
               <td className="border p-2">{user.picture}</td>
               <td className="border p-2 space-x-2 flex flex-row flex-nowrap justify-evenly">
                 <Eye className="w-5 h-5 inline text-green-500 cursor-pointer"
-                  title="Ver detalles"
                   onClick={() => navigate(`/user/${user.id}`)}
                 />
                 <Pencil className="w-5 h-5 inline text-yellow-500 cursor-pointer"
-                  title="Editar usuario"
                   onClick={() => {
                     // setEditUser(user);
                     handleEditClick(String(user.id));
@@ -124,7 +122,6 @@ const UsersPage: React.FC = () => {
                   }}
                 />
                 <Trash2 className="w-5 h-5 inline text-red-500 cursor-pointer"
-                  title="Eliminar usuario"
                   onClick={() => {
                     setSelectedUser(user);
                     setIsDeleteModalOpen(true);
