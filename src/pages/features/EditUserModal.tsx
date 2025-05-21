@@ -7,15 +7,30 @@ interface EditUserModalProps {
     onClose: () => void;
     onSave: (updatedUser: User) => void;
 }
-
+//expresiones resulares para validad las entradas en los campos correspondientes
 const nameRegex = /^([a-zA-Z]{2,})(\s[a-zA-Z]{2,})?$/;
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|co|org|gov|edu)$/;
 const phoneRegex = /^\+57\s?\d{10}$/;
 
+//formato para las fechas 
 const today = new Date().toISOString().split('T')[0];
 const minBirthDate = new Date();
 minBirthDate.setFullYear(minBirthDate.getFullYear() - 80);
 const minDate = minBirthDate.toISOString().split('T')[0];
+
+const titleOptions: { [key: string]: string } = { //diccionario para traducciones
+    mr: "Sr.",
+    ms: "Sra.",
+    mrs: "Señora.",
+    miss: "Señorita",
+    dr: "Dr."
+};
+
+const genderOptions: { [key: string]: string } = {
+    male: "Masculino",
+    female: "Femenino",
+    other: "Otro"
+};
 
 const EditUserModal: React.FC<EditUserModalProps> = ({ user, isOpen, onClose, onSave }) => {
     const [form, setForm] = useState<User>({} as User);
@@ -30,13 +45,13 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, isOpen, onClose, on
         });
     }, [user]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => { //manjador de eventos para los cambios en los inputs
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
         validate(name, value);
     };
 
-const validate = (name: string, value: string) => {
+const validate = (name: string, value: string) => { //funcion para validar los campos
     let error = "";
 
     if (name === "firstName") {
@@ -75,7 +90,7 @@ const validate = (name: string, value: string) => {
 };
 
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => { // manejo del evento submit
         e.preventDefault();
             onSave(form);
             onClose();
@@ -92,11 +107,9 @@ const validate = (name: string, value: string) => {
                     <div>
                         <label className="block font-medium mb-1">Título</label>
                         <select name="title" value={form.title} onChange={handleChange} className="w-full border rounded-md p-2">
-                            <option value="mr">Mr</option>
-                            <option value="ms">Ms</option>
-                            <option value="mrs">Mrs</option>
-                            <option value="miss">Miss</option>
-                            <option value="dr">Dr</option>
+                            {Object.entries(titleOptions).map(([key, label]) => (
+                                <option key={key} value={key}>{label}</option>
+                            ))}
                         </select>
                     </div>
 
@@ -120,10 +133,10 @@ const validate = (name: string, value: string) => {
                     
                     <div>
                         <label className="block font-medium mb-1">Género</label>
-                        <select name="gender" value={form.gender} onChange={handleChange} className="w-full border rounded-md p-2" required>
-                            <option value="male">Masculino</option>
-                            <option value="female">Femenino</option>
-                            <option value="other">Otro</option>
+                        <select name="gender" value={form.gender} onChange={handleChange} className="w-full border rounded-md p-2">
+                            {Object.entries(genderOptions).map(([key, label]) => (
+                                <option key={key} value={key}>{label}</option>
+                            ))}
                         </select>
                     </div>
 

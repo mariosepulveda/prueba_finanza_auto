@@ -14,7 +14,7 @@ export interface User {
   picture: string;
   gender: 'male' | 'female' | 'other';
   email: string;
-  dateOfBirth: string; // puede ser Date si haces casting, pero usualmente se guarda como string
+  dateOfBirth: string;
   phone: string;
   registerDate:string;
   location?: Location;

@@ -1,6 +1,6 @@
+//componente reutilizable para la paginacion de tablas
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-
 
 interface PaginationProps {
     currentPage: number;
@@ -59,7 +59,6 @@ const Pagination: React.FC<PaginationProps> = ({
                         <option value={10}>10</option>
                         <option value={20}>20</option>
 
-                        
                     </select>
                 </div>
             )}

@@ -1,7 +1,7 @@
+//capa de servicios
 import axios from "axios"
 import { User } from '../types/User';
 import { UserApiResponse } from '../types/userResponse';
-
 
 const API_BASE_URL = 'https://dummyapi.io/data/v1';
 const APP_ID = '6606af1b45b6da258bde34ab';
@@ -15,14 +15,15 @@ const api = axios.create({
   },
 })
 
-
-export const getUsers = async (page:number, limit:number): Promise<UserApiResponse> => {
-    const response = await api.get<UserApiResponse>('/user', {
-      params: { page, limit },
-    });
-    return response.data; // `data` viene en { data: [], total: ..., etc. }
+//consumo de endpoint de listar usuarios
+export const getUsers = async (page: number, limit: number): Promise<UserApiResponse> => {
+  const response = await api.get<UserApiResponse>('/user', {
+    params: { page, limit },
+  });
+  return response.data; 
 };
 
+//endpoint para obtener un usuario por id 
 export const getUserById = async (id: string): Promise<User | null> => {
   try {
     const response = await api.get<User>(`/user/${id}`);
@@ -33,7 +34,7 @@ export const getUserById = async (id: string): Promise<User | null> => {
   }
 };
 
-
+//endpoint para actualizar la informcacion de un usuario
 export const updateUser = async (id: string | number, userData: Partial<User>): Promise<User | null> => {
   try {
     const response = await api.put<User>(`/user/${id}`, userData);
@@ -44,7 +45,7 @@ export const updateUser = async (id: string | number, userData: Partial<User>): 
   }
 };
 
-
+//endpoint para crear un nuevo usuario
 export const createUser = async (userData: {
   title: string;
   firstName: string;
@@ -64,6 +65,7 @@ export const createUser = async (userData: {
   }
 };
 
+//endpoint para eliminar un usuario
 export const deleteUser = async (id: string) => {
   try {
     const response = await api.delete(`/user/${id}`);

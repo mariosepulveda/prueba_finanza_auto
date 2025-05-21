@@ -1,3 +1,4 @@
+//pagina principal con la lista de usuarios
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { User } from '../types/User';
@@ -8,7 +9,7 @@ import EditUserModal from './features/EditUserModal';
 import Pagination from '../components/Pagination/Pagination';
 import { getUsers } from '../services/userService';
 import { updateUser, getUserById } from '../services/userService';
-import { deleteUser } from '../services/userService'; 
+import { deleteUser } from '../services/userService';
 
 const UsersPage: React.FC = () => {
 
@@ -24,8 +25,8 @@ const UsersPage: React.FC = () => {
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
 
-
-    const fetchUsers = async () => {
+//peticion para obtener la lista de usuarios
+  const fetchUsers = async () => {
     const apiUsers = await getUsers(currentPage, pageSize);
     setUsers(apiUsers.data);
     setTotalItems(apiUsers.total);
@@ -35,59 +36,46 @@ const UsersPage: React.FC = () => {
   useEffect(() => {
 
     fetchUsers();
-}, [currentPage, pageSize]);
+  }, [currentPage, pageSize]);
 
-const handleDelete = async () => {
-  if (!selectedUser) return;
+  //manejador de eventos para la eliminacion de usuarios
+  const handleDelete = async () => {
+    if (!selectedUser) return;
 
-  const deleted = await deleteUser(selectedUser.id);
-  if (deleted) {
-    fetchUsers();
-    // const updatedUsers = users.filter(u => u.id !== selectedUser.id);
-    // setUsers(updatedUsers);
+    const deleted = await deleteUser(selectedUser.id);
+    if (deleted) {
+      fetchUsers();
 
-    setIsDeleteModalOpen(false);
-    setSelectedUser(null);
-  } else {
-    alert('Hubo un error al eliminar el usuario.');
-  }
-};
+      setIsDeleteModalOpen(false);
+      setSelectedUser(null);
+    } else {
+      alert('Hubo un error al eliminar el usuario.');
+    }
+  };
 
+
+//Manejador de eventos para la edicion de usuarios
   const handleEditClick = async (id: string) => {
-  const userDetail = await getUserById(id);
-  if (userDetail) {
-    setSelectedUser(userDetail); // actualiza el estado con la data fresca
-    setIsEditModalOpen(true);
-  } else {
-    console.error('No se pudo cargar el usuario');
-  }
-};
+    const userDetail = await getUserById(id);
+    if (userDetail) {
+      setSelectedUser(userDetail);
+      setIsEditModalOpen(true);
+    } else {
+      console.error('No se pudo cargar el usuario');
+    }
+  };
 
   const handleSave = async (updatedUser: User) => {
-  const result = await updateUser(updatedUser.id, updatedUser);
-  if (result) {
-    //Actualiza la tabla o el estado
+    const result = await updateUser(updatedUser.id, updatedUser);
+    if (result) {
+      //Actualiza la tabla o el estado
       fetchUsers();
-    console.log('Usuario actualizado con éxito:', result);
-  } else {
-    // show error alert
-    console.error('Error actualizando el usuario');
-  }
-};
-
-  // const filteredUsers = users.filter(user =>
-  //   user.firstName.toLowerCase().includes(search.toLowerCase()) ||
-  //   user.lastName.toLowerCase().includes(search.toLowerCase()) ||
-  //   user.dateOfBirth.toLowerCase().includes(search.toLowerCase()) ||
-  //   user.email.toLowerCase().includes(search.toLowerCase())
-
-  // );
-
-  // // const totalItems = filteredUsers.length;
-  // const totalPages = Math.ceil(totalItems / pageSize);
-  // const startIndex = (currentPage - 1) * pageSize;
-  // const paginatedUsers = filteredUsers.slice(startIndex, startIndex + pageSize);
-
+      console.log('Usuario actualizado con éxito:', result);
+    } else {
+      // show error alert
+      console.error('Error actualizando el usuario');
+    }
+  };
 
   return (
     <div className="">
@@ -127,21 +115,21 @@ const handleDelete = async () => {
                   title="Ver detalles"
                   onClick={() => navigate(`/user/${user.id}`)}
                 />
-                <Pencil className="w-5 h-5 inline text-yellow-500 cursor-pointer" 
-                    title="Editar usuario"
-                    onClick={() => {
-                      // setEditUser(user);
-                      handleEditClick(String(user.id));
-                      // setIsEditModalOpen(true);
-                    }}
-                  />
+                <Pencil className="w-5 h-5 inline text-yellow-500 cursor-pointer"
+                  title="Editar usuario"
+                  onClick={() => {
+                    // setEditUser(user);
+                    handleEditClick(String(user.id));
+                    // setIsEditModalOpen(true);
+                  }}
+                />
                 <Trash2 className="w-5 h-5 inline text-red-500 cursor-pointer"
                   title="Eliminar usuario"
                   onClick={() => {
                     setSelectedUser(user);
                     setIsDeleteModalOpen(true);
                   }}
-                  />
+                />
               </td>
             </tr>
           ))}

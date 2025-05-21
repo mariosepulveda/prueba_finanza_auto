@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header/Header';
-import { createUser } from '../services/userService'; // ajusta la ruta si hace falta
+import { createUser } from '../services/userService';
 
-interface NewUser {
-    firstName: string;
-    lastName: string;
-    email: string;
-    picture: string;
-}
 
 const today = new Date().toISOString().split('T')[0]; // Fecha máxima (hoy)
 const minBirthDate = new Date();
@@ -36,7 +30,7 @@ const CreateUserPage = () => {
         phone: '',
     });
 
-    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [errors, setErrors] = useState<{ [key: string]: string }>({}); // almacena los errores de validacion  
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -93,13 +87,13 @@ const CreateUserPage = () => {
             if (errors[field]) newErrors[field] = errors[field];
         });
 
-        const hasErrors = Object.values(newErrors).some(error => error !== '');
+        const hasErrors = Object.values(newErrors).some(error => error !== ''); // verifica si hay errores antes de enviar el formulario
         if (hasErrors) {
             console.log('Formulario con errores');
             return;
         }
 
-        // Preparar datos para enviar (ajustar nombres si es necesario)
+        // preparacion de datos para enviar
         const userToCreate = {
             title: form.title,
             firstName: form.firstName,
@@ -111,24 +105,15 @@ const CreateUserPage = () => {
             phone: form.phone,
         };
 
-        const createdUser = await createUser(userToCreate);
+        const createdUser = await createUser(userToCreate); // llama a la API para crear el usuario
 
         if (createdUser) {
             alert('Usuario creado correctamente');
-            navigate('/'); // redirige a donde quieras después de crear
+            navigate('/'); // redirige a home
         } else {
             alert('Error creando el usuario');
         }
 
-        // console.log('Formulario válido:', form);
-        // const newUser = {
-        //     ...form,
-        //     id: Date.now().toString(), // o cualquier forma de generar un id único
-        // };
-        // const existingUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
-        // existingUsers.push(newUser);
-        // localStorage.setItem('localUsers', JSON.stringify(existingUsers));
-        // navigate('/');
     };
 
     return (
@@ -149,11 +134,11 @@ const CreateUserPage = () => {
                         <label className="block font-medium mb-1">Título</label>
                         <select name="title" value={form.title} onChange={handleChange} className="w-full border rounded-md p-2" required>
                             <option value="">Seleccione...</option>
-                            <option value="mr">Mr</option>
-                            <option value="ms">Ms</option>
-                            <option value="mrs">Mrs</option>
-                            <option value="miss">Miss</option>
-                            <option value="dr">Dr</option>
+                            <option value="mr">Sr.</option>
+                            <option value="ms">Sra.</option>
+                            <option value="mrs">Señora.</option>
+                            <option value="miss">Señorita</option>
+                            <option value="dr">Dr.</option>
                         </select>
                     </div>
 
