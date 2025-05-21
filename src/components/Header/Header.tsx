@@ -11,7 +11,7 @@ const Header: React.FC = () => {
 
                 {/* Navigation */}
                 <nav className="space-x-4 hidden md:flex">
-                    <a href="#" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
+                    <a href="/" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
                         Inicio
                     </a>
                     <a href="#" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
