@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header/Header';
+import { createUser } from '../services/userService'; // ajusta la ruta si hace falta
 
 interface NewUser {
     firstName: string;
@@ -16,7 +17,7 @@ const minDate = minBirthDate.toISOString().split('T')[0]; // Fecha mínima (80 a
 
 
 const nameRegex = /^([a-zA-Z]{2,})(\s[a-zA-Z]{2,})?$/;
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|co|org|gov|edu)$/;
 const phoneRegex = /^\+57\s?\d{10}$/;
 
 
@@ -31,7 +32,7 @@ const CreateUserPage = () => {
         imageUrl: '',
         gender: '',
         email: '',
-        birthDate: '',
+        dateOfBirth: '',
         phone: '',
     });
 
@@ -81,7 +82,7 @@ const CreateUserPage = () => {
         setErrors(prev => ({ ...prev, [name]: error }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const fieldsToValidate = Object.keys(form);
@@ -98,27 +99,48 @@ const CreateUserPage = () => {
             return;
         }
 
-        console.log('Formulario válido:', form);
-        const newUser = {
-            ...form,
-            id: Date.now().toString(), // o cualquier forma de generar un id único
+        // Preparar datos para enviar (ajustar nombres si es necesario)
+        const userToCreate = {
+            title: form.title,
+            firstName: form.firstName,
+            lastName: form.lastName,
+            picture: form.imageUrl,
+            gender: form.gender,
+            email: form.email,
+            dateOfBirth: form.dateOfBirth,
+            phone: form.phone,
         };
-        const existingUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
-        existingUsers.push(newUser);
-        localStorage.setItem('localUsers', JSON.stringify(existingUsers));
-        navigate('/');
+
+        const createdUser = await createUser(userToCreate);
+
+        if (createdUser) {
+            alert('Usuario creado correctamente');
+            navigate('/'); // redirige a donde quieras después de crear
+        } else {
+            alert('Error creando el usuario');
+        }
+
+        // console.log('Formulario válido:', form);
+        // const newUser = {
+        //     ...form,
+        //     id: Date.now().toString(), // o cualquier forma de generar un id único
+        // };
+        // const existingUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+        // existingUsers.push(newUser);
+        // localStorage.setItem('localUsers', JSON.stringify(existingUsers));
+        // navigate('/');
     };
 
     return (
         <>
             <Header />
             <div className="p-4 max-w-lg mx-auto">
-                            <button
-                onClick={() => navigate(-1)}
-                className="mb-4 text-blue-600 hover:underline"
-            >
-                ← Volver
-            </button>
+                <button
+                    onClick={() => navigate(-1)}
+                    className="mb-4 text-blue-600 hover:underline"
+                >
+                    ← Volver
+                </button>
                 <h2 className="text-2xl font-bold mb-4">Crear Usuario</h2>
                 <form onSubmit={handleSubmit} className="max-w-xl mx-auto p-6 bg-white shadow-md rounded-xl space-y-4">
                     <h2 className="text-2xl font-semibold text-gray-800">Crear Usuario</h2>
@@ -210,15 +232,15 @@ const CreateUserPage = () => {
                         <input
                             type="date"
                             onKeyDown={(e) => e.preventDefault()}
-                            name="birthDate"
-                            value={form.birthDate}
+                            name="dateOfBirth"
+                            value={form.dateOfBirth}
                             onChange={handleChange}
                             className="w-full border rounded-md p-2"
                             min={minDate}
                             max={today}
                             required
                         />
-                        {errors.birthDate && <p className="text-red-500 text-sm mt-1">{errors.birthDate}</p>}
+                        {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
 
                     </div>
 

@@ -1,4 +1,3 @@
-// src/components/EditUserModal.tsx
 import React, { useState, useEffect } from 'react';
 import type { User } from '../../types/User';
 
@@ -9,37 +8,77 @@ interface EditUserModalProps {
     onSave: (updatedUser: User) => void;
 }
 
+const nameRegex = /^([a-zA-Z]{2,})(\s[a-zA-Z]{2,})?$/;
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|co|org|gov|edu)$/;
+const phoneRegex = /^\+57\s?\d{10}$/;
+
+const today = new Date().toISOString().split('T')[0];
+const minBirthDate = new Date();
+minBirthDate.setFullYear(minBirthDate.getFullYear() - 80);
+const minDate = minBirthDate.toISOString().split('T')[0];
+
 const EditUserModal: React.FC<EditUserModalProps> = ({ user, isOpen, onClose, onSave }) => {
     const [form, setForm] = useState<User>({} as User);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
-        if (user) setForm(user);
+        const formatDate = (isoDate?: string) => {
+            return isoDate? isoDate.split('T')[0] : ""; // solo toma la parte YYYY-MM-DD
+        };
+        if (user) setForm({...user,
+            dateOfBirth: formatDate(user.dateOfBirth)
+        });
     }, [user]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
+        validate(name, value);
     };
 
-    const validate = (): boolean => {
-        const newErrors: { [key: string]: string } = {};
-        if (!form.firstName) newErrors.firstName = 'Este campo es obligatorio';
-        if (!form.lastName) newErrors.lastName = 'Este campo es obligatorio';
-        if (!form.email) newErrors.email = 'Correo requerido';
-        if (!form.birthDate) newErrors.birthDate = 'Fecha requerida';
-        if (!form.phone) newErrors.phone = 'Teléfono requerido';
+const validate = (name: string, value: string) => {
+    let error = "";
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    if (name === "firstName") {
+        if (!value) error = "Este campo es obligatorio";
+        else if (!nameRegex.test(value)) error = "Debe tener al menos 2 letras. Solo letras, opcional un segundo nombre";
+    }
+
+    if (name === "lastName") {
+        if (!value) error = "Este campo es obligatorio";
+        else if (!nameRegex.test(value)) error = "Debe tener al menos 2 letras. Solo letras, opcional un segundo apellido";
+    }
+
+    if (name === "email") {
+        if (!value) error = "Correo requerido";
+        else if (!emailRegex.test(value)) error = "Correo inválido. Solo dominios .com, .co, .org, .gov, .edu";
+    }
+
+    if (name === "phone") {
+        if (!value) error = "Teléfono requerido";
+        else if (!phoneRegex.test(value)) error = "Formato inválido. Ej: +57 3001234567";
+    }
+
+    if (name === "dateOfBirth") {
+        if (!value) error = "Fecha requerida";
+        else if (value < minDate || value > today) error = `Fecha debe estar entre ${minDate} y ${today}`;
+    }
+
+    if (name === "picture") {
+        const urlRegex = /^https?:\/\/.*\.(jpg|jpeg|png|gif|webp)$/i;
+        if (value && !urlRegex.test(value)) {
+            error = "Debe ser una URL válida de imagen (.jpg, .png, etc.)";
+        }
+    }
+
+    setErrors(prev => ({ ...prev, [name]: error }));
+};
+
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (validate()) {
             onSave(form);
             onClose();
-        }
     };
 
     if (!isOpen || !user) return null;
@@ -53,7 +92,6 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, isOpen, onClose, on
                     <div>
                         <label className="block font-medium mb-1">Título</label>
                         <select name="title" value={form.title} onChange={handleChange} className="w-full border rounded-md p-2">
-                            <option value="">Seleccione...</option>
                             <option value="mr">Mr</option>
                             <option value="ms">Ms</option>
                             <option value="mrs">Mrs</option>
@@ -76,14 +114,17 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, isOpen, onClose, on
 
                     <div>
                         <label className="block font-medium mb-1">Imagen (URL)</label>
-                        <input name="imageUrl" value={form.imageUrl ?? ""} onChange={handleChange} className="w-full border p-2 rounded" />
-                        {errors.imageUrl && <p className="text-red-500 text-sm">{errors.imageUrl}</p>}
+                        <input name="imageUrl" value={form.picture ?? ""} onChange={handleChange} className="w-full border p-2 rounded" />
+                        {errors.picture && <p className="text-red-500 text-sm">{errors.picture}</p>}
                     </div>
                     
                     <div>
                         <label className="block font-medium mb-1">Género</label>
-                        <input name="gender" value={form.gender ?? ""} onChange={handleChange} className="w-full border p-2 rounded" />
-                        {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
+                        <select name="gender" value={form.gender} onChange={handleChange} className="w-full border rounded-md p-2" required>
+                            <option value="male">Masculino</option>
+                            <option value="female">Femenino</option>
+                            <option value="other">Otro</option>
+                        </select>
                     </div>
 
                     <div>
@@ -100,8 +141,8 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, isOpen, onClose, on
 
                     <div>
                         <label className="block font-medium mb-1">Fecha de Nacimiento</label>
-                        <input type="date" name="birthDate" value={form.birthDate ?? ""} onChange={handleChange} className="w-full border p-2 rounded" />
-                        {errors.birthDate && <p className="text-red-500 text-sm">{errors.birthDate}</p>}
+                        <input type="date" name="dateOfBirth" value={form.dateOfBirth ?? ""} onChange={handleChange} className="w-full border p-2 rounded" />
+                        {errors.dateOfBirth && <p className="text-red-500 text-sm">{errors.dateOfBirth}</p>}
                     </div>
 
                     <div className="flex justify-end space-x-2">

@@ -6,43 +6,9 @@ import ConfirmModal from '../components/ConfirmModal/ConfirmModal';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import EditUserModal from './features/EditUserModal';
 import Pagination from '../components/Pagination/Pagination';
-
-
-const dummyUsers: User[] = [
-  {
-    id: 1,
-    title: 'mr',
-    firstName: 'Juan',
-    lastName: 'Perez',
-    imageUrl: 'https://randomuser.me/api/portraits/men/1.jpg',
-    gender: 'male',
-    email: 'juan@example.com',
-    birthDate: '1990-05-15',
-    phone: '+57 3012345678',
-  },
-  {
-    id: 2,
-    title: 'ms',
-    firstName: 'Maria',
-    lastName: 'Lopez',
-    imageUrl: 'https://randomuser.me/api/portraits/women/2.jpg',
-    gender: 'female',
-    email: 'maria@example.com',
-    birthDate: '1985-08-22',
-    phone: '+57 3023456789',
-  },
-  {
-    id: 3,
-    title: 'dr',
-    firstName: 'Carlos',
-    lastName: 'Ruiz',
-    imageUrl: 'https://randomuser.me/api/portraits/men/3.jpg',
-    gender: 'male',
-    email: 'carlos@example.com',
-    birthDate: '1978-11-10',
-    phone: '+57 3034567890',
-  },
-];
+import { getUsers } from '../services/userService';
+import { updateUser, getUserById } from '../services/userService';
+import { deleteUser } from '../services/userService'; 
 
 const UsersPage: React.FC = () => {
 
@@ -55,45 +21,72 @@ const UsersPage: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+
+
+    const fetchUsers = async () => {
+    const apiUsers = await getUsers(currentPage, pageSize);
+    setUsers(apiUsers.data);
+    setTotalItems(apiUsers.total);
+
+  };
 
   useEffect(() => {
-    const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]') as User[];
-    const combinedUsers = [...dummyUsers, ...localUsers];
 
-    setUsers(localUsers);
-  }, []);
+    fetchUsers();
+}, [currentPage, pageSize]);
 
-  const handleDelete = () => {
-    if (!selectedUser) return;
+const handleDelete = async () => {
+  if (!selectedUser) return;
 
-    const updatedUsers = users.filter(u => u.id !== selectedUser.id);
-    setUsers(updatedUsers);
+  const deleted = await deleteUser(selectedUser.id);
+  if (deleted) {
+    fetchUsers();
+    // const updatedUsers = users.filter(u => u.id !== selectedUser.id);
+    // setUsers(updatedUsers);
 
-    localStorage.setItem('localUsers', JSON.stringify(updatedUsers));
-
-    setIsDeleteModalOpen(false); // cerrar solo el modal de eliminar
+    setIsDeleteModalOpen(false);
     setSelectedUser(null);
-  };
+  } else {
+    alert('Hubo un error al eliminar el usuario.');
+  }
+};
 
-  const handleSaveUser = (updatedUser: User) => {
-    setUsers(prev =>
-      prev.map(user => (user.id === updatedUser.id ? updatedUser : user))
-    );
-  };
+  const handleEditClick = async (id: string) => {
+  const userDetail = await getUserById(id);
+  if (userDetail) {
+    setSelectedUser(userDetail); // actualiza el estado con la data fresca
+    setIsEditModalOpen(true);
+  } else {
+    console.error('No se pudo cargar el usuario');
+  }
+};
 
-  const filteredUsers = users.filter(user =>
-    user.firstName.toLowerCase().includes(search.toLowerCase()) ||
-    user.lastName.toLowerCase().includes(search.toLowerCase()) ||
-    user.birthDate.toLowerCase().includes(search.toLowerCase()) ||
-    user.email.toLowerCase().includes(search.toLowerCase())
+  const handleSave = async (updatedUser: User) => {
+  const result = await updateUser(updatedUser.id, updatedUser);
+  if (result) {
+    //Actualiza la tabla o el estado
+      fetchUsers();
+    console.log('Usuario actualizado con éxito:', result);
+  } else {
+    // show error alert
+    console.error('Error actualizando el usuario');
+  }
+};
 
-  );
+  // const filteredUsers = users.filter(user =>
+  //   user.firstName.toLowerCase().includes(search.toLowerCase()) ||
+  //   user.lastName.toLowerCase().includes(search.toLowerCase()) ||
+  //   user.dateOfBirth.toLowerCase().includes(search.toLowerCase()) ||
+  //   user.email.toLowerCase().includes(search.toLowerCase())
 
-  const totalItems = filteredUsers.length;
-  const totalPages = Math.ceil(totalItems / pageSize);
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedUsers = filteredUsers.slice(startIndex, startIndex + pageSize);
+  // );
+
+  // // const totalItems = filteredUsers.length;
+  // const totalPages = Math.ceil(totalItems / pageSize);
+  // const startIndex = (currentPage - 1) * pageSize;
+  // const paginatedUsers = filteredUsers.slice(startIndex, startIndex + pageSize);
 
 
   return (
@@ -113,30 +106,33 @@ const UsersPage: React.FC = () => {
       <table className="w-full table-auto border-collapse">
         <thead>
           <tr className="bg-gray-200">
+            <th className="border p-2">id</th>
+            <th className="border p-2">Título</th>
             <th className="border p-2">Nombre</th>
             <th className="border p-2">Apellido</th>
-            <th className="border p-2">Email</th>
-            <th className="border p-2">Fecha de nacimiento </th>
+            <th className="border p-2">Imagen</th>
             <th className="border p-2">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {paginatedUsers.map(user => (
+          {users.map(user => (
             <tr key={user.id} className="hover:bg-gray-100">
+              <td className="border p-2">{user.id}</td>
+              <td className="border p-2">{user.title}</td>
               <td className="border p-2">{user.firstName}</td>
               <td className="border p-2">{user.lastName}</td>
-              <td className="border p-2">{user.email}</td>
-              <td className="border p-2">{user.birthDate}</td>
+              <td className="border p-2">{user.picture}</td>
               <td className="border p-2 space-x-2 flex flex-row flex-nowrap justify-evenly">
                 <Eye className="w-5 h-5 inline text-green-500 cursor-pointer"
                   title="Ver detalles"
-                  onClick={() => navigate('/user-detail', { state: { user } })}
+                  onClick={() => navigate(`/user/${user.id}`)}
                 />
                 <Pencil className="w-5 h-5 inline text-yellow-500 cursor-pointer" 
                     title="Editar usuario"
                     onClick={() => {
-                      setEditUser(user);
-                      setIsEditModalOpen(true);
+                      // setEditUser(user);
+                      handleEditClick(String(user.id));
+                      // setIsEditModalOpen(true);
                     }}
                   />
                 <Trash2 className="w-5 h-5 inline text-red-500 cursor-pointer"
@@ -149,7 +145,7 @@ const UsersPage: React.FC = () => {
               </td>
             </tr>
           ))}
-          {paginatedUsers.length === 0 && (
+          {users.length === 0 && (
             <tr>
               <td colSpan={4} className="text-center p-4">No se encontraron usuarios.</td>
             </tr>
@@ -159,7 +155,7 @@ const UsersPage: React.FC = () => {
 
       <Pagination
         currentPage={currentPage}
-        totalItems={filteredUsers.length}
+        totalItems={totalItems}
         pageSize={pageSize}
         onPageChange={(page) => setCurrentPage(page)}
         onPageSizeChange={(size) => {
@@ -169,10 +165,10 @@ const UsersPage: React.FC = () => {
       />
 
       <EditUserModal
-        user={editUser}
+        user={selectedUser}
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        onSave={handleSaveUser}
+        onSave={handleSave}
       />
 
       <ConfirmModal
