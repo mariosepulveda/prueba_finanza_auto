@@ -22,9 +22,9 @@ const Pagination: React.FC<PaginationProps> = ({
     const endItem = Math.min(startItem + pageSize - 1, totalItems);
 
     return (
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex justify-between items-center mt-4 mx-8">
             <div>
-                Mostrando {startItem} - {endItem} de {totalItems}
+                {startItem} - {endItem} de {totalItems}
             </div>
 
             <div className="flex items-center space-x-2">
@@ -55,9 +55,12 @@ const Pagination: React.FC<PaginationProps> = ({
                         onChange={(e) => onPageSizeChange(Number(e.target.value))}
                         className="border p-1 rounded"
                     >
-                        <option value={1}>1</option>
                         <option value={5}>5</option>
                         <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={1}>1</option>
+
+                        
                     </select>
                 </div>
             )}

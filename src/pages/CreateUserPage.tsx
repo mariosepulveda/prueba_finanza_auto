@@ -24,6 +24,7 @@ const CreateUserPage = () => {
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
+        id: '',
         title: '',
         firstName: '',
         lastName: '',
@@ -70,7 +71,7 @@ const CreateUserPage = () => {
                 break;
             case 'phone':
                 if (!phoneRegex.test(value) || value.length > 20) {
-                    error = 'Formato de teléfono inválido. Ej: +57 321 456 78 90';
+                    error = 'Formato de teléfono inválido. Ej: +57 3214567890';
                 }
                 break;
             default:
@@ -112,6 +113,12 @@ const CreateUserPage = () => {
         <>
             <Header />
             <div className="p-4 max-w-lg mx-auto">
+                            <button
+                onClick={() => navigate(-1)}
+                className="mb-4 text-blue-600 hover:underline"
+            >
+                ← Volver
+            </button>
                 <h2 className="text-2xl font-bold mb-4">Crear Usuario</h2>
                 <form onSubmit={handleSubmit} className="max-w-xl mx-auto p-6 bg-white shadow-md rounded-xl space-y-4">
                     <h2 className="text-2xl font-semibold text-gray-800">Crear Usuario</h2>

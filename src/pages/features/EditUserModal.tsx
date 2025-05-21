@@ -46,8 +46,9 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, isOpen, onClose, on
 
     return (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-xl">
-                <h2 className="text-2xl font-semibold mb-4">Editar Usuario</h2>
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-xl max-h-screen overflow-y-auto">
+                <h2 className="text-2xl font-semibold mb-2">Editar Usuario</h2>
+                <p className='w-full bg-gray-200 border rounded-md p-2'>Id:{form.id}</p>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="block font-medium mb-1">Título</label>
@@ -63,43 +64,43 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, isOpen, onClose, on
 
                     <div>
                         <label className="block font-medium mb-1">Nombres</label>
-                        <input name="firstName" value={form.firstName} onChange={handleChange} className="w-full border p-2 rounded" />
+                        <input name="firstName" value={form.firstName ?? ""} onChange={handleChange} className="w-full border p-2 rounded" />
                         {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
                     </div>
 
                     <div>
                         <label className="block font-medium mb-1">Apellidos</label>
-                        <input name="lastName" value={form.lastName} onChange={handleChange} className="w-full border p-2 rounded" />
+                        <input name="lastName" value={form.lastName ?? ""} onChange={handleChange} className="w-full border p-2 rounded" />
                         {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
                     </div>
 
                     <div>
                         <label className="block font-medium mb-1">Imagen (URL)</label>
-                        <input name="imageUrl" value={form.imageUrl} onChange={handleChange} className="w-full border p-2 rounded" />
+                        <input name="imageUrl" value={form.imageUrl ?? ""} onChange={handleChange} className="w-full border p-2 rounded" />
                         {errors.imageUrl && <p className="text-red-500 text-sm">{errors.imageUrl}</p>}
                     </div>
                     
                     <div>
                         <label className="block font-medium mb-1">Género</label>
-                        <input name="gender" value={form.gender} onChange={handleChange} className="w-full border p-2 rounded" />
+                        <input name="gender" value={form.gender ?? ""} onChange={handleChange} className="w-full border p-2 rounded" />
                         {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
                     </div>
 
                     <div>
                         <label className="block font-medium mb-1">Correo</label>
-                        <input type="email" name="email" value={form.email} onChange={handleChange} className="w-full border p-2 rounded" />
+                        <input type="email" name="email" value={form.email ?? ""} onChange={handleChange} className="w-full border p-2 rounded" />
                         {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                     </div>
 
                     <div>
                         <label className="block font-medium mb-1">Teléfono</label>
-                        <input name="phone" value={form.phone} onChange={handleChange} className="w-full border p-2 rounded" />
+                        <input name="phone" value={form.phone ?? ""} onChange={handleChange} className="w-full border p-2 rounded" />
                         {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
                     </div>
 
                     <div>
                         <label className="block font-medium mb-1">Fecha de Nacimiento</label>
-                        <input type="date" name="birthDate" value={form.birthDate} onChange={handleChange} className="w-full border p-2 rounded" />
+                        <input type="date" name="birthDate" value={form.birthDate ?? ""} onChange={handleChange} className="w-full border p-2 rounded" />
                         {errors.birthDate && <p className="text-red-500 text-sm">{errors.birthDate}</p>}
                     </div>
 

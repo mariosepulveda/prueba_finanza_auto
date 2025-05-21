@@ -55,7 +55,7 @@ const UsersPage: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
   useEffect(() => {
     const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]') as User[];
@@ -128,26 +128,24 @@ const UsersPage: React.FC = () => {
               <td className="border p-2">{user.email}</td>
               <td className="border p-2">{user.birthDate}</td>
               <td className="border p-2 space-x-2 flex flex-row flex-nowrap justify-evenly">
-                <button className="bg-green-500 text-white px-2 py-1 rounded"
-                  onClick={() => navigate('/user-detail', { state: { user } })}>
-                  <Eye className="w-5 h-5 inline" />
-                </button>
-                <button className="bg-yellow-400 text-white px-2 py-1 rounded"
-                  onClick={() => {
-                    setEditUser(user);
-                    setIsEditModalOpen(true);
-                  }}>
-                  <Pencil className="w-5 h-5 inline" />
-                </button>
-                <button
-                  className="bg-red-500 text-white px-2 py-1 rounded"
+                <Eye className="w-5 h-5 inline text-green-500 cursor-pointer"
+                  title="Ver detalles"
+                  onClick={() => navigate('/user-detail', { state: { user } })}
+                />
+                <Pencil className="w-5 h-5 inline text-yellow-500 cursor-pointer" 
+                    title="Editar usuario"
+                    onClick={() => {
+                      setEditUser(user);
+                      setIsEditModalOpen(true);
+                    }}
+                  />
+                <Trash2 className="w-5 h-5 inline text-red-500 cursor-pointer"
+                  title="Eliminar usuario"
                   onClick={() => {
                     setSelectedUser(user);
                     setIsDeleteModalOpen(true);
                   }}
-                >
-                  <Trash2 className="w-5 h-5 inline" />
-                </button>
+                  />
               </td>
             </tr>
           ))}
